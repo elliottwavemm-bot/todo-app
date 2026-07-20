@@ -1,15 +1,16 @@
 :root {
-  --bg: #0b0d12;
-  --text: #dde1e8;
-  --dim: #6f7787;
-  --faint: #464e5c;
-  --line: rgba(148, 163, 184, 0.14);
-  --line-strong: rgba(148, 163, 184, 0.28);
-  --accent: #4fd8eb;
-  --accent-dim: rgba(79, 216, 235, 0.55);
-  --danger: #d96a80;
-  --mono: 'Space Grotesk', ui-monospace, 'SF Mono', Menlo, monospace;
-  --duration: 180ms;
+  --desk: #eae2d2;
+  --paper: #f5efe3;
+  --ink: #7c3d28;
+  --ink-soft: #a5735c;
+  --text: #46392e;
+  --muted: #9b8b76;
+  --line: #ddd0ba;
+  --line-strong: #c4ad8d;
+  --danger: #a33d2f;
+  --display: 'Playfair Display', 'Trirong', Georgia, serif;
+  --body: 'Trirong', Georgia, 'Times New Roman', serif;
+  --duration: 160ms;
 }
 
 * {
@@ -19,20 +20,13 @@
 }
 
 html {
-  color-scheme: dark;
+  color-scheme: light;
 }
 
 body {
-  font-family: 'Space Grotesk', 'Inter', system-ui, -apple-system, sans-serif;
-  font-weight: 300;
-  letter-spacing: 0.01em;
-  background-color: var(--bg);
-  background-image: linear-gradient(
-    160deg,
-    rgba(79, 216, 235, 0.03) 0%,
-    transparent 34%
-  );
-  background-attachment: fixed;
+  font-family: var(--body);
+  font-weight: 400;
+  background-color: var(--desk);
   color: var(--text);
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
@@ -42,39 +36,96 @@ body {
   min-height: 100vh;
   display: flex;
   justify-content: center;
-  padding: clamp(28px, 9vh, 110px) 24px 56px;
+  padding: clamp(16px, 6vh, 72px) 20px 64px;
 }
 
-.app {
+/* ---------- แผ่นกระดาษ ---------- */
+
+.sheet {
   width: 100%;
-  max-width: 580px;
+  max-width: 620px;
+  height: fit-content;
+  background: var(--paper);
+  border: 1px solid var(--line-strong);
+  box-shadow: 0 1px 2px rgba(70, 57, 46, 0.08), 0 12px 40px rgba(70, 57, 46, 0.1);
+  padding: clamp(24px, 5vw, 44px) clamp(20px, 5vw, 44px) clamp(20px, 4vw, 32px);
   display: flex;
   flex-direction: column;
 }
 
-/* ---------- Header ---------- */
+/* ---------- หัวกระดาษ ---------- */
 
-.app-header {
+.masthead {
+  display: flex;
+  align-items: stretch;
+  border: 1.5px solid var(--ink);
+  margin-bottom: 14px;
+}
+
+.app-title {
+  flex: 1;
+  padding: 16px 20px;
+  font-family: var(--display);
+  font-size: clamp(1.5rem, 5.5vw, 2.1rem);
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink);
+  text-wrap: balance;
+}
+
+.ornament {
+  display: grid;
+  place-items: center;
+  padding: 0 18px;
+  border-left: 1.5px solid var(--ink);
+  color: var(--ink);
+}
+
+.date-row {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
   gap: 16px;
-  margin-bottom: 36px;
+  padding: 8px 2px 10px;
+  border-bottom: 1.5px solid var(--ink);
+  margin-bottom: 26px;
 }
 
-.app-title {
-  font-size: clamp(1.6rem, 5vw, 2rem);
-  font-weight: 500;
-  letter-spacing: -0.01em;
+.date-label {
+  font-size: 0.78rem;
+  letter-spacing: 0.14em;
+  color: var(--ink);
 }
 
-.app-date {
-  color: var(--dim);
-  font-size: 0.82rem;
-  letter-spacing: 0.02em;
+.date-value {
+  letter-spacing: 0.04em;
+  color: var(--text);
 }
 
-/* ---------- Input ---------- */
+.day-letters {
+  display: flex;
+  gap: 2px;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+}
+
+.day-letters span {
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 1px solid transparent;
+}
+
+.day-letters .is-today {
+  color: var(--ink);
+  border-color: var(--ink);
+}
+
+/* ---------- ช่องเขียนงานใหม่ ---------- */
 
 .todo-input {
   display: flex;
@@ -82,20 +133,19 @@ body {
   gap: 12px;
   border-bottom: 1px solid var(--line-strong);
   transition: border-color var(--duration) ease;
-  margin-bottom: 28px;
+  margin-bottom: 24px;
 }
 
 .todo-input:focus-within {
-  border-color: var(--accent-dim);
+  border-color: var(--ink-soft);
 }
 
 .todo-input-field {
   flex: 1;
   min-width: 0;
-  padding: 12px 0;
+  padding: 10px 2px;
   font: inherit;
   font-size: 1rem;
-  letter-spacing: inherit;
   color: var(--text);
   background: transparent;
   border: none;
@@ -103,53 +153,56 @@ body {
 }
 
 .todo-input-field::placeholder {
-  color: var(--faint);
+  color: var(--muted);
+  font-style: italic;
 }
 
 .todo-input-button {
   flex-shrink: 0;
-  padding: 6px 14px;
+  padding: 5px 16px;
   font: inherit;
   font-size: 0.85rem;
-  color: var(--accent);
+  letter-spacing: 0.06em;
+  color: var(--ink);
   background: transparent;
-  border: 1px solid var(--accent-dim);
-  border-radius: 3px;
+  border: 1px solid var(--ink);
   cursor: pointer;
-  transition: background var(--duration) ease, color var(--duration) ease,
-    opacity var(--duration) ease;
+  transition: background var(--duration) ease, color var(--duration) ease;
 }
 
 .todo-input-button:hover:enabled {
-  background: rgba(79, 216, 235, 0.1);
+  background: var(--ink);
+  color: var(--paper);
 }
 
 .todo-input-button:disabled {
-  color: var(--faint);
-  border-color: var(--line);
+  color: var(--muted);
+  border-color: var(--line-strong);
   cursor: default;
 }
 
-/* ---------- Filter bar ---------- */
+/* ---------- แถบ filter ---------- */
 
 .filter-bar {
   display: flex;
-  align-items: center;
+  align-items: baseline;
   justify-content: space-between;
   gap: 16px;
-  margin-bottom: 4px;
+  padding-bottom: 8px;
+  border-bottom: 1.5px solid var(--ink);
 }
 
 .filter-group {
   display: flex;
-  gap: 20px;
+  gap: 18px;
 }
 
 .filter-button {
-  padding: 6px 0;
+  padding: 2px 0;
   font: inherit;
-  font-size: 0.84rem;
-  color: var(--dim);
+  font-size: 0.85rem;
+  letter-spacing: 0.06em;
+  color: var(--muted);
   background: transparent;
   border: none;
   border-bottom: 1px solid transparent;
@@ -162,22 +215,25 @@ body {
 }
 
 .filter-button.is-active {
-  color: var(--text);
-  border-bottom-color: var(--accent);
+  color: var(--ink);
+  border-bottom-color: var(--ink);
+  font-weight: 500;
 }
 
 .remaining-count {
-  font-size: 0.8rem;
-  color: var(--dim);
+  font-size: 0.82rem;
+  letter-spacing: 0.06em;
+  color: var(--muted);
   font-variant-numeric: tabular-nums;
 }
 
 .remaining-count strong {
-  color: var(--text);
-  font-weight: 500;
+  font-family: var(--display);
+  color: var(--ink);
+  font-weight: 600;
 }
 
-/* ---------- Todo list ---------- */
+/* ---------- รายการงาน (บรรทัดกระดาษ) ---------- */
 
 .todo-list {
   list-style: none;
@@ -189,14 +245,14 @@ body {
   display: flex;
   align-items: center;
   gap: 14px;
-  padding: 15px 2px;
+  padding: 13px 2px;
   border-bottom: 1px solid var(--line);
   animation: item-in 200ms ease-out;
   transition: background var(--duration) ease;
 }
 
 .todo-item:hover {
-  background: rgba(148, 163, 184, 0.04);
+  background: rgba(124, 61, 40, 0.035);
 }
 
 @keyframes item-in {
@@ -218,7 +274,7 @@ body {
 @keyframes item-out {
   to {
     opacity: 0;
-    transform: translateX(20px);
+    transform: translateX(16px);
     max-height: 0;
     padding-top: 0;
     padding-bottom: 0;
@@ -226,29 +282,29 @@ body {
   }
 }
 
-/* checkbox สี่เหลี่ยมมุมตัด */
+/* checkbox สี่เหลี่ยมแบบแบบฟอร์มกระดาษ */
 
 .todo-check {
   flex-shrink: 0;
-  width: 18px;
-  height: 18px;
+  width: 17px;
+  height: 17px;
   display: grid;
   place-items: center;
-  color: var(--bg);
+  color: var(--paper);
   background: transparent;
-  border: 1px solid var(--line-strong);
-  border-radius: 3px;
+  border: 1px solid var(--ink-soft);
+  border-radius: 0;
   cursor: pointer;
   transition: border-color var(--duration) ease, background var(--duration) ease;
 }
 
 .todo-check:hover {
-  border-color: var(--accent-dim);
+  border-color: var(--ink);
 }
 
 .is-done .todo-check {
-  background: var(--accent);
-  border-color: var(--accent);
+  background: var(--ink);
+  border-color: var(--ink);
 }
 
 /* ข้อความ */
@@ -257,23 +313,23 @@ body {
   flex: 1;
   min-width: 0;
   overflow-wrap: anywhere;
-  font-size: 0.95rem;
+  font-size: 0.98rem;
   cursor: default;
   user-select: none;
   transition: color var(--duration) ease;
 }
 
 .is-done .todo-text {
-  color: var(--faint);
+  color: var(--muted);
   text-decoration: line-through;
-  text-decoration-color: var(--faint);
+  text-decoration-color: var(--ink-soft);
 }
 
 .todo-time {
   flex-shrink: 0;
-  font-family: var(--mono);
-  font-size: 0.72rem;
-  color: var(--faint);
+  font-size: 0.74rem;
+  letter-spacing: 0.08em;
+  color: var(--muted);
   font-variant-numeric: tabular-nums;
 }
 
@@ -282,12 +338,11 @@ body {
   min-width: 0;
   padding: 2px 0;
   font: inherit;
-  font-size: 0.95rem;
-  letter-spacing: inherit;
+  font-size: 0.98rem;
   color: var(--text);
   background: transparent;
   border: none;
-  border-bottom: 1px solid var(--accent-dim);
+  border-bottom: 1px solid var(--ink-soft);
   outline: none;
 }
 
@@ -297,12 +352,11 @@ body {
   flex-shrink: 0;
   display: grid;
   place-items: center;
-  width: 28px;
-  height: 28px;
-  color: var(--faint);
+  width: 26px;
+  height: 26px;
+  color: var(--muted);
   background: transparent;
   border: none;
-  border-radius: 3px;
   cursor: pointer;
   opacity: 0;
   transition: color var(--duration) ease, opacity var(--duration) ease;
@@ -323,7 +377,7 @@ body {
 .todo-delete:focus-visible,
 .filter-button:focus-visible,
 .todo-input-button:focus-visible {
-  outline: 1px solid var(--accent-dim);
+  outline: 1px solid var(--ink-soft);
   outline-offset: 2px;
 }
 
@@ -341,38 +395,41 @@ body {
   }
 }
 
-/* ---------- Empty state & footer ---------- */
+/* ---------- Empty state & ท้ายกระดาษ ---------- */
 
 .empty-state {
-  padding: 40px 2px;
-  color: var(--faint);
-  font-size: 0.88rem;
+  padding: 36px 2px;
+  color: var(--muted);
+  font-style: italic;
+  font-size: 0.9rem;
 }
 
-.app-footer {
+.sheet-footer {
   margin-top: 28px;
+  padding-top: 10px;
+  border-top: 1px solid var(--line);
 }
 
 .hint {
-  color: var(--faint);
-  font-size: 0.74rem;
-  letter-spacing: 0.02em;
+  color: var(--muted);
+  font-size: 0.76rem;
+  letter-spacing: 0.08em;
 }
 
 /* ---------- Responsive ---------- */
 
 @media (max-width: 480px) {
   #root {
-    padding-top: 36px;
+    padding: 12px 10px 40px;
   }
 
-  .app-header {
-    flex-direction: column;
-    gap: 4px;
+  .date-row {
+    flex-wrap: wrap;
+    row-gap: 6px;
   }
 
   .filter-group {
-    gap: 14px;
+    gap: 12px;
   }
 
   .todo-time {

@@ -15,11 +15,41 @@ function loadTodos() {
   }
 }
 
-const todayLabel = new Intl.DateTimeFormat('th-TH', {
-  weekday: 'long',
+const today = new Date()
+const dateLabel = new Intl.DateTimeFormat('th-TH', {
   day: 'numeric',
   month: 'long',
-}).format(new Date())
+  year: 'numeric',
+}).format(today)
+const DAY_LETTERS = ['S', 'M', 'T', 'W', 'T', 'F', 'S']
+const todayIndex = today.getDay()
+
+function SunOrnament() {
+  return (
+    <svg viewBox="0 0 40 40" width="34" height="34" aria-hidden="true">
+      <g stroke="currentColor" strokeWidth="1" fill="none">
+        <circle cx="20" cy="20" r="4.5" />
+        <g strokeLinecap="round">
+          {Array.from({ length: 12 }, (_, i) => {
+            const a = (i * Math.PI) / 6
+            const long = i % 3 === 0
+            const r1 = 7
+            const r2 = long ? 17 : 12
+            return (
+              <line
+                key={i}
+                x1={20 + r1 * Math.cos(a)}
+                y1={20 + r1 * Math.sin(a)}
+                x2={20 + r2 * Math.cos(a)}
+                y2={20 + r2 * Math.sin(a)}
+              />
+            )
+          })}
+        </g>
+      </g>
+    </svg>
+  )
+}
 
 export default function App() {
   const [todos, setTodos] = useState(loadTodos)
@@ -71,11 +101,26 @@ export default function App() {
   const remaining = todos.filter((t) => !t.done && !t.removing).length
 
   return (
-    <div className="app">
-      <header className="app-header">
-        <h1 className="app-title">Tasks</h1>
-        <p className="app-date">{todayLabel}</p>
+    <div className="sheet">
+      <header className="masthead">
+        <h1 className="app-title">Daily Tasks</h1>
+        <div className="ornament">
+          <SunOrnament />
+        </div>
       </header>
+
+      <div className="date-row">
+        <span className="date-label">
+          DATE : <span className="date-value">{dateLabel}</span>
+        </span>
+        <span className="day-letters" aria-label="วันในสัปดาห์">
+          {DAY_LETTERS.map((d, i) => (
+            <span key={i} className={i === todayIndex ? 'is-today' : ''}>
+              {d}
+            </span>
+          ))}
+        </span>
+      </div>
 
       <TodoInput onAdd={addTodo} />
 
@@ -99,11 +144,11 @@ export default function App() {
             ? 'ยังไม่มีงานที่เสร็จ'
             : filter === 'active'
               ? 'ไม่มีงานค้าง'
-              : 'ยังไม่มีงาน — พิมพ์เพิ่มได้ที่ช่องด้านบน'}
+              : 'ยังไม่มีงานสำหรับวันนี้ — เขียนเพิ่มได้ที่บรรทัดด้านบน'}
         </p>
       )}
 
-      <footer className="app-footer">
+      <footer className="sheet-footer">
         <span className="hint">ดับเบิลคลิกที่ชื่องานเพื่อแก้ไข</span>
       </footer>
     </div>
