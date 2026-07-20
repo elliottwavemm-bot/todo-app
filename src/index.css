@@ -1,0 +1,402 @@
+:root {
+  --bg: #0a0a0f;
+  --bg-glow-1: rgba(0, 229, 255, 0.06);
+  --bg-glow-2: rgba(64, 96, 255, 0.05);
+  --surface: rgba(255, 255, 255, 0.03);
+  --surface-hover: rgba(255, 255, 255, 0.055);
+  --border: rgba(255, 255, 255, 0.08);
+  --border-glow: rgba(0, 229, 255, 0.25);
+  --text: #e8eaf0;
+  --text-dim: #6b7080;
+  --accent: #00e5ff;
+  --accent-soft: rgba(0, 229, 255, 0.12);
+  --danger: #ff5470;
+  --radius: 14px;
+  --transition: 220ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  color-scheme: dark;
+}
+
+body {
+  font-family: 'Space Grotesk', 'Inter', system-ui, -apple-system, sans-serif;
+  font-weight: 300;
+  letter-spacing: 0.02em;
+  background-color: var(--bg);
+  background-image:
+    radial-gradient(ellipse 80% 50% at 20% -10%, var(--bg-glow-1), transparent),
+    radial-gradient(ellipse 60% 40% at 90% 110%, var(--bg-glow-2), transparent);
+  background-attachment: fixed;
+  color: var(--text);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+#root {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  padding: clamp(24px, 8vh, 96px) 20px 48px;
+}
+
+.app {
+  width: 100%;
+  max-width: 560px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+/* ---------- Header ---------- */
+
+.app-header {
+  text-align: center;
+}
+
+.app-title {
+  font-size: clamp(2rem, 6vw, 2.75rem);
+  font-weight: 300;
+  letter-spacing: 0.35em;
+  margin-left: 0.35em; /* ชดเชย letter-spacing ตัวสุดท้ายให้ดูกึ่งกลาง */
+  text-transform: uppercase;
+}
+
+.title-accent {
+  color: var(--accent);
+  text-shadow: 0 0 12px var(--accent), 0 0 40px rgba(0, 229, 255, 0.5);
+  animation: blink 1.4s step-end infinite;
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+.app-subtitle {
+  margin-top: 10px;
+  color: var(--text-dim);
+  font-size: 0.85rem;
+  letter-spacing: 0.12em;
+}
+
+/* ---------- Panel ---------- */
+
+.app-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* ---------- Input ---------- */
+
+.todo-input {
+  display: flex;
+  gap: 10px;
+}
+
+.todo-input-field {
+  flex: 1;
+  min-width: 0;
+  padding: 14px 18px;
+  font: inherit;
+  letter-spacing: inherit;
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  outline: none;
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+
+.todo-input-field::placeholder {
+  color: var(--text-dim);
+}
+
+.todo-input-field:focus {
+  border-color: var(--border-glow);
+  box-shadow: 0 0 0 1px var(--border-glow), 0 0 24px rgba(0, 229, 255, 0.12);
+}
+
+.todo-input-button {
+  padding: 14px 24px;
+  font: inherit;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  color: var(--bg);
+  background: var(--accent);
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+  box-shadow: 0 0 20px rgba(0, 229, 255, 0.25);
+  transition: box-shadow var(--transition), transform var(--transition);
+}
+
+.todo-input-button:hover {
+  box-shadow: 0 0 32px rgba(0, 229, 255, 0.45);
+  transform: translateY(-1px);
+}
+
+.todo-input-button:active {
+  transform: translateY(0);
+}
+
+/* ---------- Filter bar ---------- */
+
+.filter-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.filter-group {
+  display: flex;
+  gap: 6px;
+}
+
+.filter-button {
+  padding: 8px 14px;
+  font: inherit;
+  font-size: 0.8rem;
+  letter-spacing: 0.06em;
+  color: var(--text-dim);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: color var(--transition), border-color var(--transition),
+    background var(--transition), box-shadow var(--transition);
+}
+
+.filter-button:hover {
+  color: var(--text);
+}
+
+.filter-button.is-active {
+  color: var(--accent);
+  background: var(--accent-soft);
+  border-color: var(--border-glow);
+  box-shadow: 0 0 16px rgba(0, 229, 255, 0.1);
+}
+
+.remaining-count {
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  letter-spacing: 0.06em;
+}
+
+.remaining-count strong {
+  color: var(--accent);
+  font-weight: 500;
+}
+
+/* ---------- Todo list ---------- */
+
+.todo-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.todo-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  animation: item-in 260ms cubic-bezier(0.2, 0.8, 0.3, 1);
+  transition: border-color var(--transition), background var(--transition),
+    box-shadow var(--transition);
+}
+
+.todo-item:hover {
+  background: var(--surface-hover);
+  border-color: rgba(0, 229, 255, 0.16);
+  box-shadow: 0 0 20px rgba(0, 229, 255, 0.06);
+}
+
+@keyframes item-in {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.todo-item.is-removing {
+  animation: item-out 300ms cubic-bezier(0.4, 0, 1, 1) forwards;
+  pointer-events: none;
+}
+
+@keyframes item-out {
+  to {
+    opacity: 0;
+    transform: translateX(32px) scale(0.96);
+    max-height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    margin-bottom: -10px; /* หักล้าง gap ของ list ให้รายการอื่นเลื่อนขึ้นนุ่มๆ */
+    border-color: transparent;
+  }
+}
+
+/* checkbox วงกลม */
+
+.todo-check {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  display: grid;
+  place-items: center;
+  color: var(--bg);
+  background: transparent;
+  border: 1.5px solid var(--text-dim);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: border-color var(--transition), background var(--transition),
+    box-shadow var(--transition);
+}
+
+.todo-check:hover {
+  border-color: var(--accent);
+  box-shadow: 0 0 12px rgba(0, 229, 255, 0.3);
+}
+
+.is-done .todo-check {
+  background: var(--accent);
+  border-color: var(--accent);
+  box-shadow: 0 0 12px rgba(0, 229, 255, 0.4);
+}
+
+/* ข้อความ */
+
+.todo-text {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  font-size: 0.95rem;
+  cursor: default;
+  user-select: none;
+  transition: color var(--transition);
+}
+
+.is-done .todo-text {
+  color: var(--text-dim);
+  text-decoration: line-through;
+  text-decoration-color: rgba(0, 229, 255, 0.5);
+}
+
+.todo-edit-field {
+  flex: 1;
+  min-width: 0;
+  padding: 2px 8px;
+  font: inherit;
+  font-size: 0.95rem;
+  letter-spacing: inherit;
+  color: var(--text);
+  background: rgba(0, 229, 255, 0.06);
+  border: 1px solid var(--border-glow);
+  border-radius: 8px;
+  outline: none;
+  box-shadow: 0 0 16px rgba(0, 229, 255, 0.1);
+}
+
+/* ปุ่มลบ */
+
+.todo-delete {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  color: var(--text-dim);
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  opacity: 0;
+  transition: color var(--transition), opacity var(--transition),
+    background var(--transition);
+}
+
+.todo-item:hover .todo-delete,
+.todo-delete:focus-visible {
+  opacity: 1;
+}
+
+.todo-delete:hover {
+  color: var(--danger);
+  background: rgba(255, 84, 112, 0.08);
+}
+
+/* บนจอสัมผัสไม่มี hover — แสดงปุ่มลบตลอด */
+@media (hover: none) {
+  .todo-delete {
+    opacity: 1;
+  }
+}
+
+/* ---------- Empty state & footer ---------- */
+
+.empty-state {
+  text-align: center;
+  padding: 32px 0 16px;
+  color: var(--text-dim);
+  font-size: 0.9rem;
+  letter-spacing: 0.06em;
+}
+
+.app-footer {
+  text-align: center;
+}
+
+.hint {
+  color: var(--text-dim);
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  opacity: 0.7;
+}
+
+/* ---------- Responsive ---------- */
+
+@media (max-width: 480px) {
+  #root {
+    padding-top: 32px;
+  }
+
+  .todo-input-button {
+    padding: 14px 18px;
+  }
+
+  .filter-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .filter-group {
+    justify-content: center;
+  }
+
+  .remaining-count {
+    text-align: center;
+  }
+}
