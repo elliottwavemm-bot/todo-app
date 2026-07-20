@@ -22,7 +22,7 @@ export default function FilterBar({ filter, onChange, remaining }) {
         ))}
       </div>
       <span className="remaining-count">
-        เหลือ <strong>{remaining}</strong> งาน
+        เหลือ <strong>{remaining}</strong>
       </span>
     </div>
   )

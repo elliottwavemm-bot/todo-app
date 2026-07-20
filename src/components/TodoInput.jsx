@@ -15,7 +15,7 @@ export default function TodoInput({ onAdd }) {
       <input
         type="text"
         className="todo-input-field"
-        placeholder="พิมพ์งานใหม่แล้วกด Enter…"
+        placeholder="เพิ่มงานใหม่…"
         value={value}
         onChange={(e) => setValue(e.target.value)}
         onKeyDown={(e) => {
@@ -27,6 +27,7 @@ export default function TodoInput({ onAdd }) {
         type="button"
         className="todo-input-button"
         onClick={submit}
+        disabled={!value.trim()}
         aria-label="เพิ่มงาน"
       >
         เพิ่ม

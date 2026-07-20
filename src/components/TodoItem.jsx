@@ -1,5 +1,10 @@
 import { useEffect, useRef, useState } from 'react'
 
+const timeFormat = new Intl.DateTimeFormat('th-TH', {
+  hour: '2-digit',
+  minute: '2-digit',
+})
+
 export default function TodoItem({ todo, onToggle, onEdit, onRemove }) {
   const [editing, setEditing] = useState(false)
   const [draft, setDraft] = useState(todo.text)
@@ -46,12 +51,12 @@ export default function TodoItem({ todo, onToggle, onEdit, onRemove }) {
         aria-pressed={todo.done}
       >
         {todo.done && (
-          <svg viewBox="0 0 16 16" width="12" height="12" aria-hidden="true">
+          <svg viewBox="0 0 16 16" width="11" height="11" aria-hidden="true">
             <path
               d="M2.5 8.5 6 12l7.5-8"
               fill="none"
               stroke="currentColor"
-              strokeWidth="2"
+              strokeWidth="2.2"
               strokeLinecap="round"
               strokeLinejoin="round"
             />
@@ -78,13 +83,19 @@ export default function TodoItem({ todo, onToggle, onEdit, onRemove }) {
         </span>
       )}
 
+      {todo.createdAt && !editing && (
+        <time className="todo-time" dateTime={new Date(todo.createdAt).toISOString()}>
+          {timeFormat.format(todo.createdAt)}
+        </time>
+      )}
+
       <button
         type="button"
         className="todo-delete"
         onClick={() => onRemove(todo.id)}
         aria-label="ลบงาน"
       >
-        <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true">
+        <svg viewBox="0 0 16 16" width="13" height="13" aria-hidden="true">
           <path
             d="M3 3l10 10M13 3L3 13"
             stroke="currentColor"

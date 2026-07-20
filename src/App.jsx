@@ -15,6 +15,12 @@ function loadTodos() {
   }
 }
 
+const todayLabel = new Intl.DateTimeFormat('th-TH', {
+  weekday: 'long',
+  day: 'numeric',
+  month: 'long',
+}).format(new Date())
+
 export default function App() {
   const [todos, setTodos] = useState(loadTodos)
   const [filter, setFilter] = useState('all')
@@ -25,7 +31,13 @@ export default function App() {
 
   const addTodo = (text) => {
     setTodos((prev) => [
-      { id: crypto.randomUUID(), text, done: false, removing: false },
+      {
+        id: crypto.randomUUID(),
+        text,
+        done: false,
+        removing: false,
+        createdAt: Date.now(),
+      },
       ...prev,
     ])
   }
@@ -61,42 +73,38 @@ export default function App() {
   return (
     <div className="app">
       <header className="app-header">
-        <h1 className="app-title">
-          TODO<span className="title-accent">_</span>
-        </h1>
-        <p className="app-subtitle">จัดการงานของคุณ อย่างเรียบง่าย</p>
+        <h1 className="app-title">Tasks</h1>
+        <p className="app-date">{todayLabel}</p>
       </header>
 
-      <main className="app-panel">
-        <TodoInput onAdd={addTodo} />
+      <TodoInput onAdd={addTodo} />
 
-        <FilterBar filter={filter} onChange={setFilter} remaining={remaining} />
+      <FilterBar filter={filter} onChange={setFilter} remaining={remaining} />
 
-        <ul className="todo-list">
-          {visibleTodos.map((todo) => (
-            <TodoItem
-              key={todo.id}
-              todo={todo}
-              onToggle={toggleTodo}
-              onEdit={editTodo}
-              onRemove={removeTodo}
-            />
-          ))}
-        </ul>
+      <ul className="todo-list">
+        {visibleTodos.map((todo) => (
+          <TodoItem
+            key={todo.id}
+            todo={todo}
+            onToggle={toggleTodo}
+            onEdit={editTodo}
+            onRemove={removeTodo}
+          />
+        ))}
+      </ul>
 
-        {visibleTodos.length === 0 && (
-          <p className="empty-state">
-            {filter === 'done'
-              ? 'ยังไม่มีงานที่เสร็จ'
-              : filter === 'active'
-                ? 'ไม่มีงานค้างอยู่ 🎉'
-                : 'ยังไม่มีงาน — เพิ่มงานแรกของคุณด้านบน'}
-          </p>
-        )}
-      </main>
+      {visibleTodos.length === 0 && (
+        <p className="empty-state">
+          {filter === 'done'
+            ? 'ยังไม่มีงานที่เสร็จ'
+            : filter === 'active'
+              ? 'ไม่มีงานค้าง'
+              : 'ยังไม่มีงาน — พิมพ์เพิ่มได้ที่ช่องด้านบน'}
+        </p>
+      )}
 
       <footer className="app-footer">
-        <span className="hint">ดับเบิลคลิกที่งานเพื่อแก้ไข</span>
+        <span className="hint">ดับเบิลคลิกที่ชื่องานเพื่อแก้ไข</span>
       </footer>
     </div>
   )

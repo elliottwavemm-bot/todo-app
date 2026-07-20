@@ -1,18 +1,15 @@
 :root {
-  --bg: #0a0a0f;
-  --bg-glow-1: rgba(0, 229, 255, 0.06);
-  --bg-glow-2: rgba(64, 96, 255, 0.05);
-  --surface: rgba(255, 255, 255, 0.03);
-  --surface-hover: rgba(255, 255, 255, 0.055);
-  --border: rgba(255, 255, 255, 0.08);
-  --border-glow: rgba(0, 229, 255, 0.25);
-  --text: #e8eaf0;
-  --text-dim: #6b7080;
-  --accent: #00e5ff;
-  --accent-soft: rgba(0, 229, 255, 0.12);
-  --danger: #ff5470;
-  --radius: 14px;
-  --transition: 220ms cubic-bezier(0.4, 0, 0.2, 1);
+  --bg: #0b0d12;
+  --text: #dde1e8;
+  --dim: #6f7787;
+  --faint: #464e5c;
+  --line: rgba(148, 163, 184, 0.14);
+  --line-strong: rgba(148, 163, 184, 0.28);
+  --accent: #4fd8eb;
+  --accent-dim: rgba(79, 216, 235, 0.55);
+  --danger: #d96a80;
+  --mono: 'Space Grotesk', ui-monospace, 'SF Mono', Menlo, monospace;
+  --duration: 180ms;
 }
 
 * {
@@ -28,11 +25,13 @@ html {
 body {
   font-family: 'Space Grotesk', 'Inter', system-ui, -apple-system, sans-serif;
   font-weight: 300;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.01em;
   background-color: var(--bg);
-  background-image:
-    radial-gradient(ellipse 80% 50% at 20% -10%, var(--bg-glow-1), transparent),
-    radial-gradient(ellipse 60% 40% at 90% 110%, var(--bg-glow-2), transparent);
+  background-image: linear-gradient(
+    160deg,
+    rgba(79, 216, 235, 0.03) 0%,
+    transparent 34%
+  );
   background-attachment: fixed;
   color: var(--text);
   min-height: 100vh;
@@ -43,111 +42,92 @@ body {
   min-height: 100vh;
   display: flex;
   justify-content: center;
-  padding: clamp(24px, 8vh, 96px) 20px 48px;
+  padding: clamp(28px, 9vh, 110px) 24px 56px;
 }
 
 .app {
   width: 100%;
-  max-width: 560px;
+  max-width: 580px;
   display: flex;
   flex-direction: column;
-  gap: 32px;
 }
 
 /* ---------- Header ---------- */
 
 .app-header {
-  text-align: center;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 36px;
 }
 
 .app-title {
-  font-size: clamp(2rem, 6vw, 2.75rem);
-  font-weight: 300;
-  letter-spacing: 0.35em;
-  margin-left: 0.35em; /* ชดเชย letter-spacing ตัวสุดท้ายให้ดูกึ่งกลาง */
-  text-transform: uppercase;
+  font-size: clamp(1.6rem, 5vw, 2rem);
+  font-weight: 500;
+  letter-spacing: -0.01em;
 }
 
-.title-accent {
-  color: var(--accent);
-  text-shadow: 0 0 12px var(--accent), 0 0 40px rgba(0, 229, 255, 0.5);
-  animation: blink 1.4s step-end infinite;
-}
-
-@keyframes blink {
-  50% {
-    opacity: 0;
-  }
-}
-
-.app-subtitle {
-  margin-top: 10px;
-  color: var(--text-dim);
-  font-size: 0.85rem;
-  letter-spacing: 0.12em;
-}
-
-/* ---------- Panel ---------- */
-
-.app-panel {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
+.app-date {
+  color: var(--dim);
+  font-size: 0.82rem;
+  letter-spacing: 0.02em;
 }
 
 /* ---------- Input ---------- */
 
 .todo-input {
   display: flex;
-  gap: 10px;
+  align-items: center;
+  gap: 12px;
+  border-bottom: 1px solid var(--line-strong);
+  transition: border-color var(--duration) ease;
+  margin-bottom: 28px;
+}
+
+.todo-input:focus-within {
+  border-color: var(--accent-dim);
 }
 
 .todo-input-field {
   flex: 1;
   min-width: 0;
-  padding: 14px 18px;
+  padding: 12px 0;
   font: inherit;
+  font-size: 1rem;
   letter-spacing: inherit;
   color: var(--text);
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background: transparent;
+  border: none;
   outline: none;
-  transition: border-color var(--transition), box-shadow var(--transition);
 }
 
 .todo-input-field::placeholder {
-  color: var(--text-dim);
-}
-
-.todo-input-field:focus {
-  border-color: var(--border-glow);
-  box-shadow: 0 0 0 1px var(--border-glow), 0 0 24px rgba(0, 229, 255, 0.12);
+  color: var(--faint);
 }
 
 .todo-input-button {
-  padding: 14px 24px;
+  flex-shrink: 0;
+  padding: 6px 14px;
   font: inherit;
-  font-weight: 500;
-  letter-spacing: 0.08em;
-  color: var(--bg);
-  background: var(--accent);
-  border: none;
-  border-radius: var(--radius);
+  font-size: 0.85rem;
+  color: var(--accent);
+  background: transparent;
+  border: 1px solid var(--accent-dim);
+  border-radius: 3px;
   cursor: pointer;
-  box-shadow: 0 0 20px rgba(0, 229, 255, 0.25);
-  transition: box-shadow var(--transition), transform var(--transition);
+  transition: background var(--duration) ease, color var(--duration) ease,
+    opacity var(--duration) ease;
 }
 
-.todo-input-button:hover {
-  box-shadow: 0 0 32px rgba(0, 229, 255, 0.45);
-  transform: translateY(-1px);
+.todo-input-button:hover:enabled {
+  background: rgba(79, 216, 235, 0.1);
 }
 
-.todo-input-button:active {
-  transform: translateY(0);
+.todo-input-button:disabled {
+  color: var(--faint);
+  border-color: var(--line);
+  cursor: default;
 }
 
 /* ---------- Filter bar ---------- */
@@ -156,27 +136,25 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
-  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 4px;
 }
 
 .filter-group {
   display: flex;
-  gap: 6px;
+  gap: 20px;
 }
 
 .filter-button {
-  padding: 8px 14px;
+  padding: 6px 0;
   font: inherit;
-  font-size: 0.8rem;
-  letter-spacing: 0.06em;
-  color: var(--text-dim);
+  font-size: 0.84rem;
+  color: var(--dim);
   background: transparent;
-  border: 1px solid transparent;
-  border-radius: 999px;
+  border: none;
+  border-bottom: 1px solid transparent;
   cursor: pointer;
-  transition: color var(--transition), border-color var(--transition),
-    background var(--transition), box-shadow var(--transition);
+  transition: color var(--duration) ease, border-color var(--duration) ease;
 }
 
 .filter-button:hover {
@@ -184,20 +162,18 @@ body {
 }
 
 .filter-button.is-active {
-  color: var(--accent);
-  background: var(--accent-soft);
-  border-color: var(--border-glow);
-  box-shadow: 0 0 16px rgba(0, 229, 255, 0.1);
+  color: var(--text);
+  border-bottom-color: var(--accent);
 }
 
 .remaining-count {
   font-size: 0.8rem;
-  color: var(--text-dim);
-  letter-spacing: 0.06em;
+  color: var(--dim);
+  font-variant-numeric: tabular-nums;
 }
 
 .remaining-count strong {
-  color: var(--accent);
+  color: var(--text);
   font-weight: 500;
 }
 
@@ -207,84 +183,72 @@ body {
   list-style: none;
   display: flex;
   flex-direction: column;
-  gap: 10px;
 }
 
 .todo-item {
   display: flex;
   align-items: center;
   gap: 14px;
-  padding: 14px 16px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  animation: item-in 260ms cubic-bezier(0.2, 0.8, 0.3, 1);
-  transition: border-color var(--transition), background var(--transition),
-    box-shadow var(--transition);
+  padding: 15px 2px;
+  border-bottom: 1px solid var(--line);
+  animation: item-in 200ms ease-out;
+  transition: background var(--duration) ease;
 }
 
 .todo-item:hover {
-  background: var(--surface-hover);
-  border-color: rgba(0, 229, 255, 0.16);
-  box-shadow: 0 0 20px rgba(0, 229, 255, 0.06);
+  background: rgba(148, 163, 184, 0.04);
 }
 
 @keyframes item-in {
   from {
     opacity: 0;
-    transform: translateY(-8px) scale(0.98);
+    transform: translateY(-4px);
   }
   to {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: translateY(0);
   }
 }
 
 .todo-item.is-removing {
-  animation: item-out 300ms cubic-bezier(0.4, 0, 1, 1) forwards;
+  animation: item-out 300ms ease-in forwards;
   pointer-events: none;
 }
 
 @keyframes item-out {
   to {
     opacity: 0;
-    transform: translateX(32px) scale(0.96);
+    transform: translateX(20px);
     max-height: 0;
     padding-top: 0;
     padding-bottom: 0;
-    margin-bottom: -10px; /* หักล้าง gap ของ list ให้รายการอื่นเลื่อนขึ้นนุ่มๆ */
     border-color: transparent;
   }
 }
 
-/* checkbox วงกลม */
+/* checkbox สี่เหลี่ยมมุมตัด */
 
 .todo-check {
   flex-shrink: 0;
-  width: 22px;
-  height: 22px;
+  width: 18px;
+  height: 18px;
   display: grid;
   place-items: center;
   color: var(--bg);
   background: transparent;
-  border: 1.5px solid var(--text-dim);
-  border-radius: 50%;
+  border: 1px solid var(--line-strong);
+  border-radius: 3px;
   cursor: pointer;
-  transition: border-color var(--transition), background var(--transition),
-    box-shadow var(--transition);
+  transition: border-color var(--duration) ease, background var(--duration) ease;
 }
 
 .todo-check:hover {
-  border-color: var(--accent);
-  box-shadow: 0 0 12px rgba(0, 229, 255, 0.3);
+  border-color: var(--accent-dim);
 }
 
 .is-done .todo-check {
   background: var(--accent);
   border-color: var(--accent);
-  box-shadow: 0 0 12px rgba(0, 229, 255, 0.4);
 }
 
 /* ข้อความ */
@@ -296,28 +260,35 @@ body {
   font-size: 0.95rem;
   cursor: default;
   user-select: none;
-  transition: color var(--transition);
+  transition: color var(--duration) ease;
 }
 
 .is-done .todo-text {
-  color: var(--text-dim);
+  color: var(--faint);
   text-decoration: line-through;
-  text-decoration-color: rgba(0, 229, 255, 0.5);
+  text-decoration-color: var(--faint);
+}
+
+.todo-time {
+  flex-shrink: 0;
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  color: var(--faint);
+  font-variant-numeric: tabular-nums;
 }
 
 .todo-edit-field {
   flex: 1;
   min-width: 0;
-  padding: 2px 8px;
+  padding: 2px 0;
   font: inherit;
   font-size: 0.95rem;
   letter-spacing: inherit;
   color: var(--text);
-  background: rgba(0, 229, 255, 0.06);
-  border: 1px solid var(--border-glow);
-  border-radius: 8px;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--accent-dim);
   outline: none;
-  box-shadow: 0 0 16px rgba(0, 229, 255, 0.1);
 }
 
 /* ปุ่มลบ */
@@ -326,16 +297,15 @@ body {
   flex-shrink: 0;
   display: grid;
   place-items: center;
-  width: 30px;
-  height: 30px;
-  color: var(--text-dim);
+  width: 28px;
+  height: 28px;
+  color: var(--faint);
   background: transparent;
   border: none;
-  border-radius: 8px;
+  border-radius: 3px;
   cursor: pointer;
   opacity: 0;
-  transition: color var(--transition), opacity var(--transition),
-    background var(--transition);
+  transition: color var(--duration) ease, opacity var(--duration) ease;
 }
 
 .todo-item:hover .todo-delete,
@@ -345,7 +315,16 @@ body {
 
 .todo-delete:hover {
   color: var(--danger);
-  background: rgba(255, 84, 112, 0.08);
+}
+
+/* focus ที่มองเห็นได้สำหรับคีย์บอร์ด */
+
+.todo-check:focus-visible,
+.todo-delete:focus-visible,
+.filter-button:focus-visible,
+.todo-input-button:focus-visible {
+  outline: 1px solid var(--accent-dim);
+  outline-offset: 2px;
 }
 
 /* บนจอสัมผัสไม่มี hover — แสดงปุ่มลบตลอด */
@@ -355,48 +334,48 @@ body {
   }
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .todo-item,
+  .todo-item.is-removing {
+    animation-duration: 1ms;
+  }
+}
+
 /* ---------- Empty state & footer ---------- */
 
 .empty-state {
-  text-align: center;
-  padding: 32px 0 16px;
-  color: var(--text-dim);
-  font-size: 0.9rem;
-  letter-spacing: 0.06em;
+  padding: 40px 2px;
+  color: var(--faint);
+  font-size: 0.88rem;
 }
 
 .app-footer {
-  text-align: center;
+  margin-top: 28px;
 }
 
 .hint {
-  color: var(--text-dim);
-  font-size: 0.75rem;
-  letter-spacing: 0.1em;
-  opacity: 0.7;
+  color: var(--faint);
+  font-size: 0.74rem;
+  letter-spacing: 0.02em;
 }
 
 /* ---------- Responsive ---------- */
 
 @media (max-width: 480px) {
   #root {
-    padding-top: 32px;
+    padding-top: 36px;
   }
 
-  .todo-input-button {
-    padding: 14px 18px;
-  }
-
-  .filter-bar {
+  .app-header {
     flex-direction: column;
-    align-items: stretch;
+    gap: 4px;
   }
 
   .filter-group {
-    justify-content: center;
+    gap: 14px;
   }
 
-  .remaining-count {
-    text-align: center;
+  .todo-time {
+    display: none;
   }
 }
