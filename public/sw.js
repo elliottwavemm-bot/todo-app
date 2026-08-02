@@ -1,4 +1,4 @@
-const CACHE = 'daily-tasks-v2'
+const CACHE = 'kaui-tam-v1'
 
 const CACHEABLE_HOSTS = [
   self.location.origin,

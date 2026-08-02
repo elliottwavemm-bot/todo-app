@@ -1,13 +1,13 @@
 {
-  "name": "Daily Tasks",
-  "short_name": "Daily Tasks",
-  "description": "รายการงานประจำวัน สไตล์สมุด planner",
+  "name": "ค่อยๆ ทำ",
+  "short_name": "ค่อยๆ ทำ",
+  "description": "รายการงานที่ไม่กดดันคุณ ค่อยๆ ไล่ทำไปทีละข้อ",
   "lang": "th",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#eae2d2",
-  "theme_color": "#f5efe3",
+  "background_color": "#f5ead8",
+  "theme_color": "#f5ead8",
   "icons": [
     {
       "src": "icons/icon-192.png",

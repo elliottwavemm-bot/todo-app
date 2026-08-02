@@ -1,156 +1,232 @@
-import { useEffect, useMemo, useState } from 'react'
-import TodoInput from './components/TodoInput.jsx'
-import TodoItem from './components/TodoItem.jsx'
-import FilterBar from './components/FilterBar.jsx'
+import { useEffect, useRef, useState } from 'react'
+import { makeSeed, PRAISE, todayISO, addDaysISO, toFriday } from './data.js'
+import Onboarding from './components/Onboarding.jsx'
+import TodayScreen from './components/TodayScreen.jsx'
+import AllScreen from './components/AllScreen.jsx'
+import WeekScreen from './components/WeekScreen.jsx'
+import StatsScreen from './components/StatsScreen.jsx'
+import SettingsScreen from './components/SettingsScreen.jsx'
+import TabBar from './components/TabBar.jsx'
+import Sheet from './components/Sheet.jsx'
 
-const STORAGE_KEY = 'futuristic-todos-v1'
+const STORE = 'kaui-tam-v1'
 
-function loadTodos() {
+function loadStore() {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY)
-    const parsed = raw ? JSON.parse(raw) : []
-    return Array.isArray(parsed) ? parsed : []
+    const raw = localStorage.getItem(STORE)
+    const s = raw ? JSON.parse(raw) : {}
+    return {
+      tasks: Array.isArray(s.tasks) ? s.tasks : makeSeed(),
+      toggles: { morning: true, focus: false, sound: true, ...s.toggles },
+      theme: s.theme || 'cream',
+      onboarded: !!s.onboarded,
+      firstUse: s.firstUse || todayISO(),
+      doneLog: s.doneLog || {},
+    }
   } catch {
-    return []
+    return {
+      tasks: makeSeed(),
+      toggles: { morning: true, focus: false, sound: true },
+      theme: 'cream',
+      onboarded: false,
+      firstUse: todayISO(),
+      doneLog: {},
+    }
   }
 }
 
-const today = new Date()
-const dateLabel = new Intl.DateTimeFormat('th-TH', {
-  day: 'numeric',
-  month: 'long',
-  year: 'numeric',
-}).format(today)
-const DAY_LETTERS = ['S', 'M', 'T', 'W', 'T', 'F', 'S']
-const todayIndex = today.getDay()
-
-function SunOrnament() {
-  return (
-    <svg viewBox="0 0 40 40" width="34" height="34" aria-hidden="true">
-      <g stroke="currentColor" strokeWidth="1" fill="none">
-        <circle cx="20" cy="20" r="4.5" />
-        <g strokeLinecap="round">
-          {Array.from({ length: 12 }, (_, i) => {
-            const a = (i * Math.PI) / 6
-            const long = i % 3 === 0
-            const r1 = 7
-            const r2 = long ? 17 : 12
-            return (
-              <line
-                key={i}
-                x1={20 + r1 * Math.cos(a)}
-                y1={20 + r1 * Math.sin(a)}
-                x2={20 + r2 * Math.cos(a)}
-                y2={20 + r2 * Math.sin(a)}
-              />
-            )
-          })}
-        </g>
-      </g>
-    </svg>
-  )
+// เสียงป๊อกเบาๆ ตอนติ๊กเสร็จ
+function playTick() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)()
+    const o = ctx.createOscillator()
+    const g = ctx.createGain()
+    o.type = 'sine'
+    o.frequency.setValueAtTime(660, ctx.currentTime)
+    o.frequency.exponentialRampToValueAtTime(990, ctx.currentTime + 0.08)
+    g.gain.setValueAtTime(0.12, ctx.currentTime)
+    g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.18)
+    o.connect(g).connect(ctx.destination)
+    o.start()
+    o.stop(ctx.currentTime + 0.2)
+    o.onended = () => ctx.close()
+  } catch {
+    /* ไม่มีเสียงก็ไม่เป็นไร */
+  }
 }
 
 export default function App() {
-  const [todos, setTodos] = useState(loadTodos)
-  const [filter, setFilter] = useState('all')
+  const [store, setStore] = useState(loadStore)
+  const [screen, setScreen] = useState(() => (loadStore().onboarded ? 'today' : 'onboard'))
+  const [sheet, setSheet] = useState(null)
+  const [editingId, setEditingId] = useState(null)
+  const [toast, setToast] = useState(null)
+  const toastTimer = useRef(null)
 
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(todos))
-  }, [todos])
+    localStorage.setItem(STORE, JSON.stringify(store))
+  }, [store])
 
-  const addTodo = (text) => {
-    setTodos((prev) => [
-      {
+  useEffect(() => {
+    document.documentElement.dataset.theme = store.theme
+  }, [store.theme])
+
+  const say = (msg) => {
+    setToast(msg)
+    clearTimeout(toastTimer.current)
+    toastTimer.current = setTimeout(() => setToast(null), 2200)
+  }
+
+  const patchStore = (patch) => setStore((s) => ({ ...s, ...patch }))
+
+  const go = (s) => {
+    setScreen(s)
+    setSheet(null)
+  }
+
+  const toggleTask = (id) => {
+    setStore((s) => {
+      let praised = false
+      const tasks = s.tasks.map((t) => {
+        if (t.id !== id) return t
+        if (!t.done) praised = true
+        return { ...t, done: !t.done }
+      })
+      const doneLog = { ...s.doneLog }
+      const key = todayISO()
+      if (praised) {
+        doneLog[key] = (doneLog[key] || 0) + 1
+        if (s.toggles.sound) playTick()
+        say(PRAISE[Math.floor(Math.random() * PRAISE.length)])
+      } else {
+        doneLog[key] = Math.max(0, (doneLog[key] || 0) - 1)
+      }
+      return { ...s, tasks, doneLog }
+    })
+  }
+
+  const openSheet = (id) => {
+    const t = id ? store.tasks.find((x) => x.id === id) : null
+    setEditingId(id || null)
+    setSheet(
+      t
+        ? {
+            title: t.title, pri: t.pri, tag: t.tag,
+            when: whenOf(t), subs: t.subs.map((x) => ({ ...x })),
+            repeat: t.repeat, remind: t.remind !== false,
+          }
+        : { title: '', pri: 'mid', tag: 'เรียน', when: 'today', subs: [], repeat: '', remind: true },
+    )
+  }
+
+  const whenOf = (t) => {
+    const diff = Math.round(
+      (new Date(t.due + 'T00:00:00') - new Date(todayISO() + 'T00:00:00')) / 86400000,
+    )
+    if (diff <= 0) return 'today'
+    if (diff === 1) return 'tomorrow'
+    if (diff <= toFriday()) return 'week'
+    return 'someday'
+  }
+
+  const saveSheet = () => {
+    const d = sheet
+    const title = (d.title || '').trim() || 'งานที่ยังไม่ได้ตั้งชื่อ'
+    const dueMap = {
+      today: 0,
+      tomorrow: 1,
+      week: toFriday(),
+      someday: 7,
+    }
+    if (editingId) {
+      setStore((s) => ({
+        ...s,
+        tasks: s.tasks.map((t) =>
+          t.id === editingId
+            ? { ...t, title, pri: d.pri, tag: d.tag, repeat: d.repeat, remind: d.remind, subs: d.subs.filter((x) => x.t.trim()) }
+            : t,
+        ),
+      }))
+      say('แก้ให้แล้ว')
+    } else {
+      const due = addDaysISO(todayISO(), dueMap[d.when])
+      const task = {
         id: crypto.randomUUID(),
-        text,
-        done: false,
-        removing: false,
-        createdAt: Date.now(),
-      },
-      ...prev,
-    ])
+        title, pri: d.pri, tag: d.tag, repeat: d.repeat, remind: d.remind,
+        subs: d.subs.filter((x) => x.t.trim()),
+        done: false, hour: '20:00', due, createdAt: Date.now(),
+      }
+      setStore((s) => ({ ...s, tasks: [...s.tasks, task] }))
+      setScreen(dueMap[d.when] === 0 ? 'today' : 'all')
+      say('จดไว้ให้แล้ว ค่อยๆ ทำนะ')
+    }
+    setSheet(null)
+    setEditingId(null)
   }
 
-  const toggleTodo = (id) => {
-    setTodos((prev) =>
-      prev.map((t) => (t.id === id ? { ...t, done: !t.done } : t)),
-    )
+  const deleteTask = () => {
+    if (!editingId) return
+    setStore((s) => ({ ...s, tasks: s.tasks.filter((t) => t.id !== editingId) }))
+    setSheet(null)
+    setEditingId(null)
+    say('ลบให้แล้ว')
   }
 
-  const editTodo = (id, text) => {
-    setTodos((prev) => prev.map((t) => (t.id === id ? { ...t, text } : t)))
+  const resetData = () => {
+    patchStore({ tasks: makeSeed() })
+    say('คืนค่างานตัวอย่างแล้ว')
   }
 
-  // ตั้งธง removing ก่อนเพื่อให้ animation เล่นจบ แล้วค่อยลบจริง
-  const removeTodo = (id) => {
-    setTodos((prev) =>
-      prev.map((t) => (t.id === id ? { ...t, removing: true } : t)),
-    )
-    setTimeout(() => {
-      setTodos((prev) => prev.filter((t) => t.id !== id))
-    }, 320)
+  const finishOnboard = () => {
+    patchStore({ onboarded: true })
+    go('today')
   }
 
-  const visibleTodos = useMemo(() => {
-    if (filter === 'active') return todos.filter((t) => !t.done)
-    if (filter === 'done') return todos.filter((t) => t.done)
-    return todos
-  }, [todos, filter])
-
-  const remaining = todos.filter((t) => !t.done && !t.removing).length
+  const common = {
+    tasks: store.tasks,
+    toggles: store.toggles,
+    onToggleTask: toggleTask,
+    onOpenTask: openSheet,
+    go,
+  }
 
   return (
-    <div className="sheet">
-      <header className="masthead">
-        <h1 className="app-title">Daily Tasks</h1>
-        <div className="ornament">
-          <SunOrnament />
-        </div>
-      </header>
-
-      <div className="date-row">
-        <span className="date-label">
-          DATE : <span className="date-value">{dateLabel}</span>
-        </span>
-        <span className="day-letters" aria-label="วันในสัปดาห์">
-          {DAY_LETTERS.map((d, i) => (
-            <span key={i} className={i === todayIndex ? 'is-today' : ''}>
-              {d}
-            </span>
-          ))}
-        </span>
-      </div>
-
-      <TodoInput onAdd={addTodo} />
-
-      <FilterBar filter={filter} onChange={setFilter} remaining={remaining} />
-
-      <ul className="todo-list">
-        {visibleTodos.map((todo) => (
-          <TodoItem
-            key={todo.id}
-            todo={todo}
-            onToggle={toggleTodo}
-            onEdit={editTodo}
-            onRemove={removeTodo}
-          />
-        ))}
-      </ul>
-
-      {visibleTodos.length === 0 && (
-        <p className="empty-state">
-          {filter === 'done'
-            ? 'ยังไม่มีงานที่เสร็จ'
-            : filter === 'active'
-              ? 'ไม่มีงานค้าง'
-              : 'ยังไม่มีงานสำหรับวันนี้ — เขียนเพิ่มได้ที่บรรทัดด้านบน'}
-        </p>
+    <div className="app">
+      {screen === 'onboard' && <Onboarding onDone={finishOnboard} />}
+      {screen === 'today' && <TodayScreen {...common} onAdd={() => openSheet(null)} />}
+      {screen === 'all' && <AllScreen {...common} />}
+      {screen === 'week' && <WeekScreen {...common} />}
+      {screen === 'stats' && <StatsScreen tasks={store.tasks} doneLog={store.doneLog} />}
+      {screen === 'settings' && (
+        <SettingsScreen
+          store={store}
+          onPatch={patchStore}
+          onReset={resetData}
+          onReplayOnboard={() => go('onboard')}
+          go={go}
+        />
       )}
 
-      <footer className="sheet-footer">
-        <span className="hint">ดับเบิลคลิกที่ชื่องานเพื่อแก้ไข</span>
-      </footer>
+      {toast && (
+        <div className="toast-wrap">
+          <div className="toast">{toast}</div>
+        </div>
+      )}
+
+      {sheet && (
+        <Sheet
+          draft={sheet}
+          editing={!!editingId}
+          onPatch={(k, v) => setSheet((s) => ({ ...s, [k]: v }))}
+          onClose={() => { setSheet(null); setEditingId(null) }}
+          onSave={saveSheet}
+          onDelete={deleteTask}
+        />
+      )}
+
+      {screen !== 'onboard' && (
+        <TabBar screen={screen} go={go} onAdd={() => openSheet(null)} />
+      )}
     </div>
   )
 }
