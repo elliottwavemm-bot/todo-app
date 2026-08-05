@@ -81,6 +81,17 @@ body {
   color: var(--color-text);
   -webkit-font-smoothing: antialiased;
   overscroll-behavior-y: none;
+  /* ปิดการเลือกข้อความ/เมนูคัดลอกตอนกดค้าง ให้ความรู้สึกเป็น native app */
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+input,
+textarea {
+  -webkit-user-select: text;
+  user-select: text;
 }
 
 button {
